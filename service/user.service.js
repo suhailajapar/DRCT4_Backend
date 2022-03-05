@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const db = require("../database");
 
 const { createToken, validateToken } = require("../utils/jwt");
@@ -36,7 +37,7 @@ const loginUser = async (req, res) => {
 
     const does_password_match = await bcrypt.compare(
       password,
-      results.row[0].password
+      results.rows[0].password
     );
     if (!does_password_match) {
       return res
@@ -44,7 +45,7 @@ const loginUser = async (req, res) => {
         .send({ message: "Wrong email/password combination!" });
     }
 
-    const { email: db_email, loginid } = result.rows[0];
+    const { email: db_email, loginid } = results.rows[0];
     const access_token = createToken(db_email, loginid);
 
     //Store access-token in cookiie
@@ -55,7 +56,7 @@ const loginUser = async (req, res) => {
 
     // Remove password from response.
     // Renamed it to removed_password because clashes with top declaration
-    const { password: removed_password, ...filtered_result } = result.rows[0];
+    const { password: removed_password, ...filtered_result } = results.rows[0];
     console.log(filtered_result);
 
     return res.status(200).send({ token: access_token, ...filtered_result });
