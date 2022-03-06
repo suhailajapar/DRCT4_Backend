@@ -1,6 +1,8 @@
+const path = require("path");
 const dotenv = require("dotenv");
 
-dotenv.config({ path: __dirname + "/.env" });
+const dotenv_filepath = path.join(__dirname, "/..") + "/.env";
+dotenv.config({ path: dotenv_filepath });
 
 module.exports = {
   db_user: process.env.DB_USER,

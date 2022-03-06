@@ -1,5 +1,4 @@
 const db = require("./index");
-const { db_user } = require("./config");
 
 const setupDBFunctions = async () => {
   await db.query(`
@@ -28,9 +27,9 @@ const setupUserTable = async () => {
         date_joined TIMESTAMPTZ,
         user_img TEXT,
         PRIMARY KEY (loginid),
-        -- CONSTRAINT "UQ_4c8f96ccf523e9a3faefd5bdd4c" UNIQUE (email)
+        CONSTRAINT "UQ_4c8f96ccf523e9a3faefd5bdd4c" UNIQUE (email)
     );
-    `);
+  `);
 
   await db.query("GRANT ALL ON hikers.users to postgres;");
 };
@@ -48,7 +47,7 @@ const setupWalletTable = async () => {
             REFERENCES hikers.users (loginid) MATCH SIMPLE
             ON UPDATE NO ACTION
             ON DELETE NO ACTION
-    )
+    );
 `);
 
   await db.query("GRANT ALL ON hikers.wallet to postgres;");
@@ -81,11 +80,11 @@ const setupTransactionTable = async () => {
     console.log("Error setting up functions: " + e);
   }
 
-  console.log("Setting up Users table...");
+  console.log("Setting up User table...");
   try {
     await setupUserTable();
   } catch (e) {
-    console.log("Error setting up Users table: " + e);
+    console.log("Error setting up User table: " + e);
   }
 
   console.log("Setting up Wallet table...");

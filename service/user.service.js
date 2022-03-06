@@ -1,13 +1,25 @@
 const bcrypt = require("bcrypt");
-const db = require("../database");
 
+const db = require("../database");
 const { createToken, validateToken } = require("../utils/jwt");
 
+// Shared
+const getUserById = async (loginid) => {
+  const profile_query =
+    "SELECT full_name, email, phone, date_joined FROM hikers.users WHERE loginid = $1";
+
+  return await db.query(profile_query, [loginid]);
+};
+
+// Services
 const registerUser = async (req, res) => {
-  const { username, fullname, email, password, date_joined } = req.body;
+  const { username, full_name, email, password, date_joined } = req.body;
+  if (!username || !full_name || !email || !password || !date_joined) {
+    return res.send({ error: "You have missing required fields/parameters." });
+  }
+
   const hashed_password = await bcrypt.hash(password, 10);
-  const user_info = [username, fullname, email, hashed_password, date_joined];
-  console.log(user_info);
+  const user_info = [username, full_name, email, hashed_password, date_joined];
 
   const register_query =
     "INSERT INTO hikers.users (username, full_name, email, password, date_joined) VALUES ($1, $2, $3, $4, $5)";
@@ -15,11 +27,9 @@ const registerUser = async (req, res) => {
   try {
     await db.query(register_query, [...user_info]);
   } catch (e) {
-    console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: "Failed to register user. " + e });
   }
 
-  console.log("REGISTER SUCCESS");
   return res.status(200).send({ message: "Welcome Hikers" });
 };
 
@@ -66,8 +76,41 @@ const loginUser = async (req, res) => {
   }
 };
 
-const getUserProfile = (req, res) => {
-  res.json("profile");
+const getUserProfile = async (req, res) => {
+  const { loginid } = req.params;
+
+  const result = await getUserById(loginid);
+  if (!result || !result.rowCount) {
+    res.send({ error: "User not found." });
+  }
+
+  return res.send({ ...result.rows[0] });
 };
 
-module.exports = { registerUser, loginUser, getUserProfile };
+const updateUser = async (req, res) => {
+  const { loginid } = req.params;
+  const { full_name, email, phone } = req.body;
+
+  if (!full_name || !email || !phone) {
+    return res.send({ error: "You have missing required fields." });
+  }
+
+  const result = await getUserById(loginid);
+  if (!result) {
+    return res.send({ error: "User not found." });
+  }
+
+  const update_user_query =
+    "UPDATE hikers.users SET full_name = $1, email = $2, phone = $3 WHERE loginid = $4";
+  await db.query(update_user_query, [full_name, email, phone, loginid]);
+
+  return res.send({ full_name, email, phone });
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  getUserProfile,
+  updateUser,
+  getUserById,
+};

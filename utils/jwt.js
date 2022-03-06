@@ -1,7 +1,9 @@
 const { sign, verify } = require("jsonwebtoken");
 
 const createToken = (email, login_id) => {
-  const accessToken = sign({ email, login_id }, "jwtsecretplschange");
+  const accessToken = sign({ email, login_id }, "jwtsecretplschange", {
+    expiresIn: "1d",
+  });
   return accessToken;
 };
 
