@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 
 const db = require("../database");
 const { createToken, validateToken } = require("../utils/jwt");
-// const { createWallet } = require("./wallet.service");
+const { createWallet } = require("./wallet.service");
 
 // Shared
 const getUserById = async (loginid) => {
@@ -25,14 +25,11 @@ const registerUser = async (req, res) => {
   const register_query =
     "INSERT INTO hikers.users (username, full_name, email, password, date_joined) VALUES ($1, $2, $3, $4, $5)";
 
-  // const getId = "SELECT loginid FROM hikers.users WHERE email = $1";
+  const get_user_id = "SELECT loginid FROM hikers.users WHERE email = $1";
+  const id_result = await db.query(get_user_id, [email]);
 
-  try {
-    await db.query(register_query, [...user_info]);
-    // await createWallet(USD, db.query(getId, [email]));
-  } catch (e) {
-    return res.send({ error: "Failed to register user. " + e });
-  }
+  await db.query(register_query, [...user_info]);
+  await createWallet("USD", id_result.rows[0].id);
 
   return res.status(200).send({ message: "Welcome Hikers" });
 };
