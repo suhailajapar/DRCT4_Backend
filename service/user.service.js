@@ -2,30 +2,34 @@ const bcrypt = require("bcrypt");
 
 const db = require("../database");
 const { createToken, validateToken } = require("../utils/jwt");
+// const { createWallet } = require("./wallet.service");
 
 // Shared
 const getUserById = async (loginid) => {
   const profile_query =
-    "SELECT full_name, email, phone, date_joined FROM hikers.users WHERE loginid = $1";
+    "SELECT full_name, email, phone, cast(date_joined::DATE as TEXT) as date_joined FROM hikers.users WHERE loginid = $1";
 
   return await db.query(profile_query, [loginid]);
 };
 
 // Services
 const registerUser = async (req, res) => {
-  const { username, full_name, email, password, date_joined } = req.body;
-  if (!username || !full_name || !email || !password || !date_joined) {
+  const { username, fullname, email, password, date_joined } = req.body;
+  if (!username || !fullname || !email || !password || !date_joined) {
     return res.send({ error: "You have missing required fields/parameters." });
   }
 
   const hashed_password = await bcrypt.hash(password, 10);
-  const user_info = [username, full_name, email, hashed_password, date_joined];
+  const user_info = [username, fullname, email, hashed_password, date_joined];
 
   const register_query =
     "INSERT INTO hikers.users (username, full_name, email, password, date_joined) VALUES ($1, $2, $3, $4, $5)";
 
+  // const getId = "SELECT loginid FROM hikers.users WHERE email = $1";
+
   try {
     await db.query(register_query, [...user_info]);
+    // await createWallet(USD, db.query(getId, [email]));
   } catch (e) {
     return res.send({ error: "Failed to register user. " + e });
   }
@@ -35,7 +39,8 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  const login_query = "SELECT * FROM hikers.users WHERE email = $1";
+  const login_query =
+    "SELECT loginid, username, full_name, email, password, phone, cast(date_joined::DATE as TEXT) as date_joined, user_img FROM hikers.users WHERE email = $1";
 
   try {
     const results = await db.query(login_query, [email]);

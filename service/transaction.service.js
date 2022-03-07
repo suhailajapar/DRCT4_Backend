@@ -28,6 +28,32 @@ const buyTransaction = async (req, res) => {
   }
 
   const crypto_price_usdt = await getCurrentCryptoPrice(currency);
+  const total_price = crypto_price_usdt * quantity;
+  if (Number.parseFloat(buy_wallet.balance) < total_price) {
+    return res.send({ error: "Not enough balance for transaction." });
+  }
+  const buy_balance = Number.parseFloat(buy_wallet.balance) - total_price;
+  const target_balance = Number.parseFloat(target_wallet.balance) + quantity;
+  const update_balance_query =
+    "UPDATE hikers.wallet SET balance = $1 WHERE id = $2";
+
+  await db.query(update_balance_query, [buy_balance, buy_wallet.id]);
+  await db.query(update_balance_query, [target_balance, target_wallet.id]);
+
+  const transaction_query =
+    "INSERT INTO hikers.transaction (currency, type, current_price, quantity, time, status, walletId) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+
+  const result = await db.query(transaction_query, [
+    currency,
+    "buy",
+    crypto_price_usdt,
+    quantity,
+    Date.now(),
+    "Success",
+    target_wallet.id,
+  ]);
+
+  return res.send({});
 };
 
 module.exports = { buyTransaction };

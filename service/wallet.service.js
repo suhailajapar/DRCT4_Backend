@@ -2,7 +2,7 @@ const db = require("../database");
 const { getUserById } = require("./user.service");
 
 // Shared
-export const getWalletsByLoginId = async (loginid) => {
+const getWalletsByLoginId = async (loginid) => {
   const user = await getUserById(loginid);
   if (!user || !user.rowCount) {
     return null;
@@ -13,14 +13,14 @@ export const getWalletsByLoginId = async (loginid) => {
   return results.rows;
 };
 
-export const createWallet = async (currency, loginid) => {
+const createWallet = async (currency, loginid) => {
   const create_wallet_query =
     "INSERT INTO hikers.wallet (currency, balance, loginid) VALUES ($1, $2, $3)";
 
   return await db.query(create_wallet_query, [currency, 0, loginid]);
 };
 
-export const getWalletByCurrencyLoginId = async (currency, loginid) => {
+const getWalletByCurrencyLoginId = async (currency, loginid) => {
   const get_wallet_query =
     "SELECT * FROM hikers.wallet WHERE loginid = $1 AND currency = $2";
 
@@ -48,11 +48,13 @@ const getAccountWallets = async (req, res) => {
 const createNewWallet = async (req, res) => {
   const { loginid } = req.params;
   const { currency } = req.body;
+  let parsed_currency = currency;
+
   if (!loginid) {
     return res.send({ error: "You have missing required fields/parameters." });
   }
   if (!currency) {
-    currency = "USD";
+    parsed_currency = "USD";
   }
 
   const user = await getUserById(loginid);
@@ -60,12 +62,15 @@ const createNewWallet = async (req, res) => {
     return res.send({ error: "User not found." });
   }
 
-  const existing_wallet = await checkForExistingWallet(currency, loginid);
+  const existing_wallet = await checkForExistingWallet(
+    parsed_currency,
+    loginid
+  );
   if (existing_wallet) {
     return res.send({ error: "Existing wallet already exist." });
   }
 
-  await createWallet(currency, loginid);
+  await createWallet(parsed_currency, loginid);
   const wallets = await getWalletsByLoginId(loginid);
   const wallet = wallets.find((w) => w.currency === currency);
   return res.send(wallet);
@@ -100,8 +105,9 @@ const topupWallet = async (req, res) => {
   }
 
   const new_balance = Number.parseFloat(target_balance) + topup_ammount;
-  const update_wallet_query = "UPDATE hikers.wallet SET balance = $1";
-  await db.query(update_wallet_query, [new_balance]);
+  const update_wallet_query =
+    "UPDATE hikers.wallet SET balance = $1 WHERE id = $2";
+  await db.query(update_wallet_query, [new_balance, walletid]);
 
   return res.send({
     id,

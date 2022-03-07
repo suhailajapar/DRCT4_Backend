@@ -38,11 +38,11 @@ const setupWalletTable = async () => {
   await db.query(`
     CREATE TABLE IF NOT EXISTS hikers.wallet
     (
-        id uuid NOT NULL DEFAULT uuid_generate_v4(),
+        wallet_id uuid NOT NULL DEFAULT uuid_generate_v4(),
         currency character varying COLLATE pg_catalog."default" NOT NULL,
         balance numeric(8,0) NOT NULL DEFAULT '0'::numeric,
         "loginid" TEXT,
-        CONSTRAINT "pk_wallet" PRIMARY KEY (id),
+        CONSTRAINT "pk_wallet" PRIMARY KEY (wallet_id),
         CONSTRAINT "fk_wallet" FOREIGN KEY ("loginid")
             REFERENCES hikers.users (loginid) MATCH SIMPLE
             ON UPDATE NO ACTION
@@ -64,10 +64,10 @@ const setupTransactionTable = async () => {
       quantity numeric(8,0) NOT NULL DEFAULT '0'::numeric,
       "time" timestamp without time zone NOT NULL,
       status character varying COLLATE pg_catalog."default" NOT NULL,
-      "walletId" uuid,
+      "wallet_id" uuid,
       CONSTRAINT "PK_89eadb93a89810556e1cbcd6ab9" PRIMARY KEY (id),
-      CONSTRAINT "FK_900eb6b5efaecf57343e4c0e79d" FOREIGN KEY ("walletId")
-          REFERENCES hikers.wallet (id) MATCH SIMPLE
+      CONSTRAINT "FK_900eb6b5efaecf57343e4c0e79d" FOREIGN KEY ("wallet_id")
+          REFERENCES hikers.wallet (wallet_id) MATCH SIMPLE
           ON UPDATE NO ACTION
           ON DELETE NO ACTION
   )`);
