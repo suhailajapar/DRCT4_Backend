@@ -40,7 +40,7 @@ const setupWalletTable = async () => {
     (
         wallet_id uuid NOT NULL DEFAULT uuid_generate_v4(),
         currency character varying COLLATE pg_catalog."default" NOT NULL,
-        balance numeric(8,0) NOT NULL DEFAULT '0'::numeric,
+        balance DOUBLE PRECISION NOT NULL DEFAULT '0'::numeric,
         "loginid" TEXT,
         CONSTRAINT "pk_wallet" PRIMARY KEY (wallet_id),
         CONSTRAINT "fk_wallet" FOREIGN KEY ("loginid")
@@ -60,13 +60,13 @@ const setupTransactionTable = async () => {
       id uuid NOT NULL DEFAULT uuid_generate_v4(),
       currency character varying COLLATE pg_catalog."default" NOT NULL,
       type character varying COLLATE pg_catalog."default" NOT NULL,
-      current_price numeric(8,0) NOT NULL DEFAULT '0'::numeric,
-      quantity numeric(8,0) NOT NULL DEFAULT '0'::numeric,
+      current_price DOUBLE PRECISION NOT NULL DEFAULT '0'::numeric,
+      quantity DOUBLE PRECISION NOT NULL DEFAULT '0'::numeric,
       "time" timestamp without time zone NOT NULL,
       status character varying COLLATE pg_catalog."default" NOT NULL,
       "wallet_id" uuid,
-      CONSTRAINT "PK_89eadb93a89810556e1cbcd6ab9" PRIMARY KEY (id),
-      CONSTRAINT "FK_900eb6b5efaecf57343e4c0e79d" FOREIGN KEY ("wallet_id")
+      CONSTRAINT "pk_transaction" PRIMARY KEY (id),
+      CONSTRAINT "fk_transaction" FOREIGN KEY ("wallet_id")
           REFERENCES hikers.wallet (wallet_id) MATCH SIMPLE
           ON UPDATE NO ACTION
           ON DELETE NO ACTION

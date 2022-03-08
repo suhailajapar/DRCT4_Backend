@@ -7,7 +7,7 @@ const getWalletsByLoginId = async (loginid) => {
 
   const user = await db.query(profile_query, [loginid]);
   if (!user || !user.rowCount) {
-    return res.send({ error: "User does not exist." });
+    return null;
   }
 
   const get_wallet_query = "SELECT * FROM hikers.wallet WHERE loginid = $1";
@@ -59,8 +59,10 @@ const createNewWallet = async (req, res) => {
     parsed_currency = "USD";
   }
 
-  const user = await getUserById(loginid);
-  if (!user) {
+  const profile_query = "SELECT * from hikers.wallet	WHERE loginid=$1";
+
+  const user = await db.query(profile_query, [loginid]);
+  if (!user || !user.rowCount) {
     return res.send({ error: "User not found." });
   }
 

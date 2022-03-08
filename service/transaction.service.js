@@ -13,6 +13,10 @@ const buyTransaction = async (req, res) => {
     return res.send({ error: "You have missing required fields/parameters." });
   }
 
+  if (!/^[A-Z]{3,4}$/.test(currency)) {
+    return res.send({ error: "Invalid crypto currency." });
+  }
+
   const wallets = await getWalletsByLoginId(loginid);
   if (wallets === null) {
     return res.send({ error: "User not found." });
@@ -28,32 +32,46 @@ const buyTransaction = async (req, res) => {
   }
 
   const crypto_price_usdt = await getCurrentCryptoPrice(currency);
-  const total_price = crypto_price_usdt * quantity;
+  if (!crypto_price_usdt) {
+    return res.send({ error: "Error fetching price feed." });
+  }
+
+  const total_price = crypto_price_usdt * Number.parseFloat(quantity);
   if (Number.parseFloat(buy_wallet.balance) < total_price) {
     return res.send({ error: "Not enough balance for transaction." });
   }
   const buy_balance = Number.parseFloat(buy_wallet.balance) - total_price;
-  const target_balance = Number.parseFloat(target_wallet.balance) + quantity;
-  const update_balance_query =
-    "UPDATE hikers.wallet SET balance = $1 WHERE id = $2";
+  const target_balance =
+    Number.parseFloat(target_wallet.balance) + Number.parseFloat(quantity);
 
-  await db.query(update_balance_query, [buy_balance, buy_wallet.id]);
-  await db.query(update_balance_query, [target_balance, target_wallet.id]);
+  const update_balance_query =
+    "UPDATE hikers.wallet SET balance = $1 WHERE wallet_id = $2";
+
+  const one = await db.query(update_balance_query, [
+    buy_balance,
+    buy_wallet.wallet_id,
+  ]);
+  const two = await db.query(update_balance_query, [
+    target_balance,
+    target_wallet.wallet_id,
+  ]);
 
   const transaction_query =
-    "INSERT INTO hikers.transaction (currency, type, current_price, quantity, time, status, walletId) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+    "INSERT INTO hikers.transaction (currency, type, current_price, quantity, time, status, wallet_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
 
   const result = await db.query(transaction_query, [
     currency,
     "buy",
     crypto_price_usdt,
-    quantity,
-    Date.now(),
+    Number.parseFloat(quantity),
+    new Date(),
     "Success",
-    target_wallet.id,
+    target_wallet.wallet_id,
   ]);
 
-  return res.send({});
+  return res.send(result.rows[0]);
 };
+
+const sellTransaction = (req, res) => {};
 
 module.exports = { buyTransaction };

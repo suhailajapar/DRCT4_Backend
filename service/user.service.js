@@ -25,8 +25,20 @@ const registerUser = async (req, res) => {
   const register_query =
     "INSERT INTO hikers.users (username, full_name, email, password, date_joined) VALUES ($1, $2, $3, $4, $5) RETURNING *";
 
-  const user_register = await db.query(register_query, [...user_info]);
-  await createWallet("USD", user_register.rows[0].loginid);
+  let user_register;
+  try {
+    user_register = await db.query(register_query, [...user_info]);
+    await createWallet("USD", user_register.rows[0].loginid);
+  } catch (e) {
+    if (e.code == "23505") {
+      return res.send({
+        error: "User email already in use.",
+      });
+    }
+    return res.send({
+      error: "Unable to register user. Please check your credentials.",
+    });
+  }
 
   return res.status(200).send({ message: "Welcome Hikers" });
 };
@@ -71,7 +83,7 @@ const loginUser = async (req, res) => {
     return res.status(200).send({ token: access_token, ...filtered_result });
   } catch (e) {
     console.log(e);
-    res.send({ error: e });
+    return res.send({ error: e });
   }
 };
 
@@ -80,7 +92,7 @@ const getUserProfile = async (req, res) => {
 
   const result = await getUserById(loginid);
   if (!result || !result.rowCount) {
-    res.send({ error: "User not found." });
+    return res.send({ error: "User not found." });
   }
 
   return res.send({ ...result.rows[0] });
