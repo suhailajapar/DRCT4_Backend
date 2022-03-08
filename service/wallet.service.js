@@ -1,11 +1,13 @@
+const res = require("express/lib/response");
 const db = require("../database");
-const { getUserById } = require("./user.service");
 
 // Shared
 const getWalletsByLoginId = async (loginid) => {
-  const user = await getUserById(loginid);
+  const profile_query = "SELECT * from hikers.wallet	WHERE loginid=$1";
+
+  const user = await db.query(profile_query, [loginid]);
   if (!user || !user.rowCount) {
-    return null;
+    return res.send({ error: "User does not exist." });
   }
 
   const get_wallet_query = "SELECT * FROM hikers.wallet WHERE loginid = $1";
@@ -77,7 +79,7 @@ const createNewWallet = async (req, res) => {
 };
 
 const topupWallet = async (req, res) => {
-  const { walletid } = req.params;
+  const { wallet_id } = req.params;
   const { amount, currency } = req.body;
   if (!amount || !currency) {
     return res.send({ error: "You have missing required fields/parameters." });
@@ -88,14 +90,15 @@ const topupWallet = async (req, res) => {
     return res.send({ error: "Invalid amount." });
   }
 
-  const get_wallet_id_query = "SELECT * FROM hikers.wallet WHERE id = $1";
-  const result = await db.query(get_wallet_id_query, [walletid]);
+  const get_wallet_id_query =
+    "SELECT * FROM hikers.wallet WHERE wallet_id = $1";
+  const result = await db.query(get_wallet_id_query, [wallet_id]);
   if (!result.rowCount) {
     return res.send({ error: "Wallet not found." });
   }
 
   const {
-    id,
+    walletId,
     balance: target_balance,
     currency: target_currency,
     loginid,
@@ -106,11 +109,11 @@ const topupWallet = async (req, res) => {
 
   const new_balance = Number.parseFloat(target_balance) + topup_ammount;
   const update_wallet_query =
-    "UPDATE hikers.wallet SET balance = $1 WHERE id = $2";
-  await db.query(update_wallet_query, [new_balance, walletid]);
+    "UPDATE hikers.wallet SET balance = $1 WHERE wallet_id = $2";
+  await db.query(update_wallet_query, [new_balance, wallet_id]);
 
   return res.send({
-    id,
+    wallet_id,
     currency: target_currency,
     balance: new_balance,
     loginid,

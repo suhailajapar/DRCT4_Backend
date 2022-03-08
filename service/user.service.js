@@ -23,13 +23,10 @@ const registerUser = async (req, res) => {
   const user_info = [username, fullname, email, hashed_password, date_joined];
 
   const register_query =
-    "INSERT INTO hikers.users (username, full_name, email, password, date_joined) VALUES ($1, $2, $3, $4, $5)";
+    "INSERT INTO hikers.users (username, full_name, email, password, date_joined) VALUES ($1, $2, $3, $4, $5) RETURNING *";
 
-  const get_user_id = "SELECT loginid FROM hikers.users WHERE email = $1";
-  const id_result = await db.query(get_user_id, [email]);
-
-  await db.query(register_query, [...user_info]);
-  await createWallet("USD", id_result.rows[0].id);
+  const user_register = await db.query(register_query, [...user_info]);
+  await createWallet("USD", user_register.rows[0].loginid);
 
   return res.status(200).send({ message: "Welcome Hikers" });
 };
