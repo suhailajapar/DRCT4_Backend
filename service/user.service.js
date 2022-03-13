@@ -34,7 +34,7 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const login_query =
-      "SELECT loginid, username, full_name, email, password, phone, cast(date_joined::DATE as TEXT) as date_joined, user_img FROM hikers.users WHERE email = $1";
+      "SELECT loginid, username, full_name, email, password, phone, cast(date_joined::DATE as TEXT) as date_joined FROM hikers.users WHERE email = $1";
 
     const results = await db.query(login_query, [email]);
     if (!results.rowCount) {
