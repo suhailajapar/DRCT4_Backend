@@ -25,7 +25,6 @@ const setupUserTable = async () => {
         password TEXT NOT NULL,
         phone TEXT,
         date_joined TIMESTAMPTZ,
-        user_img TEXT,
         PRIMARY KEY (loginid),
         UNIQUE (email)
     );
