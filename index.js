@@ -21,10 +21,9 @@ app.use(
 // const allowed_origins = ["http://localhost:3000", "http://localhost:3001"];
 const allowed_origins = [
   "http://localhost",
-  "http://159.223.55.216",
-  "https://hikers-one.vercel.app/",
   "https://api.tradehikers.xyz",
   "https://tradehikers.xyz",
+  "https://www.tradehikers.xyz",
 ];
 
 app.use(
