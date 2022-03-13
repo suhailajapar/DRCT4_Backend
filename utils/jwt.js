@@ -9,7 +9,7 @@ const createToken = (email, login_id) => {
 };
 
 const validateToken = (req, res, next) => {
-  const { access_token } = req.headers;
+  const { access_token } = req.body;
   if (!access_token) {
     return res.status(400).json({ error: "User not Authenticated!" });
   }
