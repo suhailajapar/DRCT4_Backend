@@ -8,6 +8,11 @@ const walletRouter = require("./routes/wallet.route");
 const transactionRouter = require("./routes/transaction.route");
 const fileRouter = require("./routes/file.route");
 
+const corsOptions = {
+  origin: "http://159.223.55.216", //included origin as true
+  credentials: true, //included credentials as true
+};
+
 const app = express();
 app.use(
   fileUpload({
@@ -16,7 +21,7 @@ app.use(
     },
   })
 );
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
