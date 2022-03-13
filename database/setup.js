@@ -20,7 +20,7 @@ const setupUserTable = async () => {
     (
         loginid TEXT NOT NULL DEFAULT (('HKR'::text || to_char((CURRENT_DATE)::timestamp with time zone, 'YYYYMMDD'::text)) || lpad((nextval('user_id_seq'::regclass))::text, 18, '0'::text)),
         username VARCHAR(16) NOT NULL,
-        full_name VARCHAR(50) TEXT NOT NULL,
+        full_name VARCHAR(50) NOT NULL,
         email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
         phone TEXT,
