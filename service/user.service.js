@@ -54,8 +54,8 @@ const loginUser = async (req, res) => {
 
     //Store access-token in cookiie
     res.cookie("access-token", access_token, {
-      domain: "localhost", //FE IP address
-      // domain: "http://159.223.55.216",
+      // domain: "localhost", //FE IP address
+      domain: "http://localhost:3000",
       maxAge: jwt_expiry, //expired in 5 min (ms)
       httpOnly: true,
     });
