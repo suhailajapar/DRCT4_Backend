@@ -19,7 +19,11 @@ app.use(
 
 // Allowed Origins. Update to match BE and FE domains
 // const allowed_origins = ["http://localhost:3000", "http://localhost:3001"];
-const allowed_origins = ["http://localhost:3000", "http://159.223.55.216"];
+const allowed_origins = [
+  "http://localhost:3000",
+  "http://159.223.55.216",
+  "https://hikers-one.vercel.app/",
+];
 
 app.use(
   cors({

@@ -55,7 +55,7 @@ const loginUser = async (req, res) => {
     //Store access-token in cookiie
     res.cookie("access-token", access_token, {
       // domain: "localhost", //FE IP address
-      domain: "http://localhost:3000",
+      domain: "https://hikers-one.vercel.app/",
       maxAge: jwt_expiry, //expired in 5 min (ms)
       httpOnly: true,
     });
