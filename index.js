@@ -16,7 +16,21 @@ app.use(
     },
   })
 );
-app.use(cors());
+
+// Allowed Origins. Update to match BE and FE domains
+// const allowed_origins = ["http://localhost:3000", "http://localhost:3001"];
+const allowed_origins = ["http://localhost:3000", "http://159.223.55.216"];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (allowed_origins.includes(origin)) return callback(null, true);
+
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
