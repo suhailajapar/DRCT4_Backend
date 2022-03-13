@@ -54,8 +54,23 @@ const loginUser = async (req, res) => {
 
     //Store access-token in cookiie
     res.cookie("access-token", access_token, {
-      // domain: "localhost", //FE IP address
       domain: "tradehikers.xyz",
+      maxAge: 300, //expired in 5min (s)
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    res.cookie("access-token", access_token, {
+      domain: ".tradehikers.xyz",
+      maxAge: 300, //expired in 5min (s)
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    res.cookie("access-token", access_token, {
+      domain: "api.tradehikers.xyz",
       maxAge: 300, //expired in 5min (s)
       httpOnly: true,
       secure: true,
