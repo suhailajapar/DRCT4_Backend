@@ -4,8 +4,10 @@ const {
   getUserTransactionById,
   sellTransaction,
 } = require("../service/transaction.service");
+const { validateToken } = require("../utils/jwt");
 
 const transactionRouter = Router();
+transactionRouter.use(validateToken);
 transactionRouter
   .route("/")
   .get((req, res) => res.send("Transaction endpoint."));

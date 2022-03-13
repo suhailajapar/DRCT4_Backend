@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const db = require("../database");
 const { createToken, validateToken } = require("../utils/jwt");
+const { jwt_expiry } = require("../utils/jwt_config");
 const { createWallet, getUserById } = require("./shared.service");
 
 const registerUser = async (req, res) => {
@@ -52,10 +53,10 @@ const loginUser = async (req, res) => {
     const access_token = createToken(db_email, loginid);
 
     //Store access-token in cookiie
-    // res.cookie("access-token", access_token, {
-    //   maxAge: 86400 * 1000, //expired in 1 day (ms)
-    //   httpOnly: true,
-    // });
+    res.cookie("access-token", access_token, {
+      maxAge: jwt_expiry, //expired in 1 day (ms)
+      httpOnly: true,
+    });
 
     // Remove password from response.
     // Renamed it to removed_password because clashes with top declaration
@@ -161,5 +162,5 @@ module.exports = {
   loginUser,
   getUserProfile,
   updateUser,
-  updatePassword
+  updatePassword,
 };
