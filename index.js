@@ -19,24 +19,26 @@ app.use(
 
 // Allowed Origins. Update to match BE and FE domains
 // const allowed_origins = ["http://localhost:3000", "http://localhost:3001"];
-const allowed_origins = [
-  "http://localhost",
-  "https://api.tradehikers.xyz",
-  "https://tradehikers.xyz",
-  "https://www.tradehikers.xyz",
-];
+// const allowed_origins = [
+//   "http://localhost",
+//   "https://api.tradehikers.xyz",
+//   "https://tradehikers.xyz",
+//   "https://www.tradehikers.xyz",
+// ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowed_origins.includes(origin))
-        return callback(null, true);
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       if (!origin || allowed_origins.includes(origin))
+//         return callback(null, true);
 
-      callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-  })
-);
+//       callback(new Error("Not allowed by CORS"));
+//     },
+//     credentials: true,
+//   })
+// );
+
+app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
