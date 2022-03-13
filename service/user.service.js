@@ -56,8 +56,10 @@ const loginUser = async (req, res) => {
     res.cookie("access-token", access_token, {
       // domain: "localhost", //FE IP address
       domain: ".tradehikers.xyz",
-      maxAge: 3600000, //expired in 1 hour (ms)
+      maxAge: 60 * 60 * 24 * 30 * 1000, //expired in 1 day (ms)
       httpOnly: true,
+      secure: true,
+      sameSite: "none",
     });
 
     // Remove password from response.
