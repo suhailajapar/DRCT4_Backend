@@ -53,29 +53,13 @@ const loginUser = async (req, res) => {
     const access_token = createToken(db_email, loginid);
 
     //Store access-token in cookiie
-    res.cookie("access-token", access_token, {
-      domain: "tradehikers.xyz",
-      maxAge: 300, //expired in 5min (s)
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-
-    res.cookie("access-token", access_token, {
-      domain: ".tradehikers.xyz",
-      maxAge: 300, //expired in 5min (s)
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-
-    res.cookie("access-token", access_token, {
-      domain: "api.tradehikers.xyz",
-      maxAge: 300, //expired in 5min (s)
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+    // res.cookie("access-token", access_token, {
+    //   domain: "tradehikers.xyz",
+    //   maxAge: 300, //expired in 5min (s)
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "none",
+    // });
 
     // Remove password from response.
     // Renamed it to removed_password because clashes with top declaration

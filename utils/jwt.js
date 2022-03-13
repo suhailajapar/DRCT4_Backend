@@ -9,13 +9,13 @@ const createToken = (email, login_id) => {
 };
 
 const validateToken = (req, res, next) => {
-  const accessToken = req.cookies["access-token"];
-  if (!accessToken) {
+  const { access_token } = req.headers;
+  if (!access_token) {
     return res.status(400).json({ error: "User not Authenticated!" });
   }
 
   try {
-    const validToken = verify(accessToken, jwt_secret);
+    const validToken = verify(access_token, jwt_secret);
     if (validToken) {
       req.authenticated = true;
       return next();
