@@ -25,7 +25,7 @@ const buyTransaction = async (req, res) => {
       throw "You have missing required fields/parameters.";
     }
 
-    if (isValidCrypto(currency)) {
+    if (!isValidCrypto(currency)) {
       throw "Invalid crypto currency.";
     }
 
