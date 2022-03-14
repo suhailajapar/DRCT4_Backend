@@ -88,8 +88,9 @@ const updateUser = async (req, res) => {
   try {
     const { loginid } = req.params;
     const { full_name, email, phone } = req.body;
+    console.log(req.body);
 
-    if (!full_name || !email || !phone) {
+    if (!full_name || !email) {
       throw "You have missing required fields.";
     }
 

@@ -16,7 +16,10 @@ userRouter
   .use(validateToken)
   .route("/update-password/:loginid")
   .post(updatePassword);
-userRouter.use(validateToken).route("/profile/:loginid").get(getUserProfile);
-userRouter.use(validateToken).route("/profile/:loginid").post(updateUser);
+userRouter.use(validateToken).route("/profile/:loginid").post(getUserProfile);
+userRouter
+  .use(validateToken)
+  .route("/profile/update/:loginid")
+  .post(updateUser);
 
 module.exports = userRouter;
