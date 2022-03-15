@@ -9,13 +9,17 @@ const { isValidCrypto } = require("../utils/validation");
 
 // for getting transaction history for calculating P/L
 const getUserTransactionById = async (req, res) => {
-  const { loginid } = req.params;
-  const get_profit_loss_query =
-    "SELECT t.currency, t.type, t.current_price, t.quantity, t.wallet_id, w.loginid from hikers.transaction as t LEFT JOIN hikers.wallet as w on t.wallet_id = w.wallet_id WHERE w.loginid = $1";
+  try {
+    const { loginid } = req.params;
+    const get_profit_loss_query =
+      "SELECT t.currency, t.type, t.current_price, t.quantity, t.wallet_id, w.loginid from hikers.transaction as t LEFT JOIN hikers.wallet as w on t.wallet_id = w.wallet_id WHERE w.loginid = $1";
 
-  const result = await db.query(get_profit_loss_query, [loginid]);
+    const result = await db.query(get_profit_loss_query, [loginid]);
 
-  return res.status(200).send(result.rows);
+    return res.status(200).send(result.rows);
+  } catch (e) {
+    return res.send({ error: e });
+  }
 };
 
 const buyTransaction = async (req, res) => {
@@ -95,6 +99,10 @@ const sellTransaction = async (req, res) => {
     const wallets = await getWalletsByLoginId(loginid);
     const buy_wallet = wallets.find((w) => w.currency === "USD");
     const target_wallet = wallets.find((w) => w.currency === currency);
+
+    if (!target_wallet) {
+      throw "No Asset found";
+    }
 
     if (quantity > target_wallet.balance) {
       throw "Not enough quantity to sell";
