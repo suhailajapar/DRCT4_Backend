@@ -29,6 +29,10 @@ const buyTransaction = async (req, res) => {
       throw "You have missing required fields/parameters.";
     }
 
+    if (isNaN(quantity)) {
+      throw "Numbers only!";
+    }
+
     if (!isValidCrypto(currency)) {
       throw "Invalid crypto currency.";
     }
@@ -88,8 +92,13 @@ const buyTransaction = async (req, res) => {
 const sellTransaction = async (req, res) => {
   try {
     const { loginid, currency, quantity } = req.body;
+
     if (!loginid || !currency || !quantity) {
       throw "You have missing required fields/parameters.";
+    }
+
+    if (isNaN(quantity)) {
+      throw "Numbers only!";
     }
 
     if (!isValidCrypto(currency)) {
