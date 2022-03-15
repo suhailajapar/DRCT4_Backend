@@ -71,7 +71,7 @@ const buyTransaction = async (req, res) => {
     ]);
 
     const transaction_query =
-      "INSERT INTO hikers.transaction (currency, type, current_price, quantity, time, status, wallet_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+      "INSERT INTO hikers.transaction (currency, transaction_type, current_price, quantity, transaction_time, status, wallet_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
 
     const result = await db.query(transaction_query, [
       currency,
@@ -141,7 +141,7 @@ const sellTransaction = async (req, res) => {
     ]);
 
     const transaction_query =
-      "INSERT INTO hikers.transaction (currency, type, current_price, quantity, time, status, wallet_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+      "INSERT INTO hikers.transaction (currency, transaction_type, current_price, quantity, transaction_time, status, wallet_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
 
     const result = await db.query(transaction_query, [
       currency,
