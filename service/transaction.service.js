@@ -12,7 +12,7 @@ const getUserTransactionById = async (req, res) => {
   try {
     const { loginid } = req.params;
     const get_profit_loss_query =
-      "SELECT t.currency, t.transaction_type, t.current_price, t.quantity, t.wallet_id, w.loginid from hikers.transaction as t LEFT JOIN hikers.wallet as w on t.wallet_id = w.wallet_id WHERE w.loginid = $1";
+      "SELECT t.currency, t.transaction_type, t.current_price, t.quantity, CAST(t.transaction_time::DATE as TEXT),t.status, t.wallet_id, w.loginid from hikers.transaction as t LEFT JOIN hikers.wallet as w on t.wallet_id = w.wallet_id WHERE w.loginid = $1";
 
     const result = await db.query(get_profit_loss_query, [loginid]);
 
