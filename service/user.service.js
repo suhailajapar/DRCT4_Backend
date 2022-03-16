@@ -119,7 +119,6 @@ const updateUser = async (req, res) => {
 const updatePassword = async (req, res) => {
   const { loginid } = req.params;
   const { old_password, new_password } = req.body;
-  console.log(old_password, new_password);
 
   const user_query = "SELECT * FROM hikers.users WHERE loginid = $1";
 
@@ -129,9 +128,7 @@ const updatePassword = async (req, res) => {
   try {
     const results = await db.query(user_query, [loginid]);
     if (!results.rowCount) {
-      return res
-        .status(400)
-        .send({ message: "Sorry, please check your input fields" });
+      throw "Sorry, please check your input fields";
     }
 
     const does_password_match = await bcrypt.compare(
@@ -139,7 +136,7 @@ const updatePassword = async (req, res) => {
       results.rows[0].password
     );
     if (!does_password_match) {
-      return res.status(400).send({ message: "Wrong password inserted!" });
+      throw "Wrong password inserted!";
     }
 
     const hashed_new_password = await bcrypt.hash(new_password, 10);
@@ -147,14 +144,15 @@ const updatePassword = async (req, res) => {
       hashed_new_password,
       loginid,
     ]);
-    console.log(update_pwd);
+
     if (!update_pwd.rowCount) {
-      return res
-        .status(400)
-        .send({ message: "Sorry, please check your input fields" });
+      throw "Sorry, please check your input fields";
     }
 
-    return res.status(200).send({ message: "Password change success" });
+    return res.status(200).send({
+      message:
+        "Password changed successfully. This will take effect on your next login.",
+    });
   } catch (e) {
     console.log(e);
     return res.send({ error: e });
