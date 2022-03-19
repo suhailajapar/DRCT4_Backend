@@ -106,7 +106,7 @@ const sellTransaction = async (req, res) => {
     }
 
     const wallets = await getWalletsByLoginId(loginid);
-    const buy_wallet = wallets.find((w) => w.currency === "USD");
+    const sell_wallet = wallets.find((w) => w.currency === "USD");
     const target_wallet = wallets.find((w) => w.currency === currency);
 
     if (!target_wallet) {
@@ -124,7 +124,7 @@ const sellTransaction = async (req, res) => {
 
     const total_price = crypto_price_usdt * Number.parseFloat(quantity);
 
-    const buy_balance = Number.parseFloat(buy_wallet.balance) + total_price;
+    const sell_balance = Number.parseFloat(sell_wallet.balance) + total_price;
     const target_balance =
       Number.parseFloat(target_wallet.balance) - Number.parseFloat(quantity);
 
@@ -132,8 +132,8 @@ const sellTransaction = async (req, res) => {
       "UPDATE hikers.wallet SET balance = $1 WHERE wallet_id = $2";
 
     const one = await db.query(update_balance_query, [
-      buy_balance,
-      buy_wallet.wallet_id,
+      sell_balance,
+      sell_wallet.wallet_id,
     ]);
     const two = await db.query(update_balance_query, [
       target_balance,
